@@ -1,0 +1,54 @@
+# fly.toml app configuration file generated for im-ns on 2024-05-15T00:59:44+03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'im-ns'
+primary_region = 'ams'
+
+[env]
+  ALLOW_ORG_SLUG = 'mualemishay-gmail-com'
+  DATA_DIR = '/data'
+  LOG_LEVEL = 'debug'
+
+[[mounts]]
+  source = 'machine_data'
+  destination = '/data'
+
+[http_service]
+  internal_port = 1337
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[services]]
+  protocol = 'tcp'
+  internal_port = 8080
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[services.ports]]
+    port = 80
+    handlers = ['http']
+    force_https = true
+
+    [services.ports.http_options]
+      h2_backend = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ['http', 'tls']
+
+    [services.ports.tls_options]
+      alpn = ['h2']
+
+    [services.ports.http_options]
+      h2_backend = true
+
+[[vm]]
+  size = 'shared-cpu-1x'
+
+[[metrics]]
